@@ -1,14 +1,48 @@
 from dotenv import load_dotenv
 from scrape_utils import *
 from misc_utils import *
+import datetime
+import pytz
+from discord.ext import commands
+import os
+from discord import *
+import discord
+from gcp_proxy import *
 
-def main():
-    load_dotenv()
-    payload = get_prize_picks_payload()
-    parsed_payload = parse_payload(payload)
-    good_lines = find_good_lines(parsed_payload)
-    write_array_to_file(good_lines, "good_lines.txt")
+load_dotenv()
+# STEP 1: BOT SETUP
+intents: Intents = Intents.default()
+intents.message_content = True  # NOQA
+client: Client = Client(intents=intents)
 
+bot = commands.Bot(command_prefix='$', intents=intents)
 
-if __name__ == "__main__":
-    main()
+def file_exists(filename):
+    return os.path.isfile(filename)
+
+@bot.event
+async def on_ready():
+    print(f'{bot.user.name} has connected to Discord!')
+
+# Command to make the bot say hello world
+@bot.command()
+async def P(ctx):
+    current_datetime = datetime.datetime.now(pytz.UTC)
+    timestamp_string = current_datetime.strftime("%m_%d_%H")
+    output_file_name = f"output_{timestamp_string}.txt"
+    
+    try:
+        file_content = get_string_from_gcs_bucket('plays-bucket', output_file_name, 'google-credentials.json')
+        
+        embed = Embed(
+            title='Plays of the Hour',
+            color = discord.Colour.dark_purple(),
+            description=file_content
+        )
+        await ctx.send(embed=embed)
+    except FileNotFoundError:
+        print(f'file {output_file_name} was not found!')
+
+disc_token = os.getenv("DISCORD_TOKEN")
+print(disc_token)
+bot.run(token=disc_token)
