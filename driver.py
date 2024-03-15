@@ -27,12 +27,8 @@ async def on_ready():
 # Command to make the bot say hello world
 @bot.command()
 async def P(ctx):
-    current_datetime = datetime.datetime.now(pytz.UTC)
-    timestamp_string = current_datetime.strftime("%m_%d_%H")
-    output_file_name = f"output_{timestamp_string}.txt"
-    
     try:
-        file_content = get_string_from_gcs_bucket('plays-bucket', output_file_name, 'google-credentials.json')
+        file_content = get_string_from_most_recent_blob('plays-bucket', 'google-credentials.json')
         
         embed = Embed(
             title='Plays of the Hour',
@@ -41,7 +37,8 @@ async def P(ctx):
         )
         await ctx.send(embed=embed)
     except FileNotFoundError:
-        print(f'file {output_file_name} was not found!')
+        print(f'no files in bucket')
+
 
 disc_token = os.getenv("DISCORD_TOKEN")
 print(disc_token)

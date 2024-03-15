@@ -115,7 +115,7 @@ def find_good_lines(df):
                         if over_odds <= -128:
                             temp_line = f'{current_player} OVER {current_line} {current_stat} {over_odds}'
                             print(temp_line)
-                        elif current_line < over_line and over_odds < -100:
+                        elif over_line - current_line >= 1.5 and over_odds < -100:
                             temp_line = f'{current_player} OVER {current_line} {current_stat} DISCOUNT Original line {over_line} {over_odds}'
                             print(temp_line)    
 
@@ -123,7 +123,7 @@ def find_good_lines(df):
                         if under_odds <= -128:
                             temp_line = f'{current_player} UNDER {current_line} {current_stat} {under_odds}'
                             print(temp_line)
-                        elif current_line > under_line and under_odds < -100:
+                        elif current_line - under_line >= 1.5 and under_odds < -100:
                             temp_line = f'{current_player} UNDER {current_line} {current_stat} DISCOUNT Original line {under_line} {under_odds}'
                             print(temp_line)
                     if len(temp_line) > 0:

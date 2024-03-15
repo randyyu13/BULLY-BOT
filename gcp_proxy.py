@@ -13,7 +13,7 @@ def upload_to_gcs(bucket_name, source_file_path, destination_blob_name, credenti
 
     print(f"File {source_file_path} uploaded to gs://{bucket_name}/{destination_blob_name}")
 
-def get_string_from_gcs_bucket(bucket_name, source_blob_name, credentials_file):
+def get_string_from_blob(bucket_name, source_blob_name, credentials_file):
     # Initialize the Google Cloud Storage client with the credentials
     storage_client = storage.Client.from_service_account_json(credentials_file)
 
@@ -24,3 +24,11 @@ def get_string_from_gcs_bucket(bucket_name, source_blob_name, credentials_file):
     blob = bucket.blob(source_blob_name)
 
     return blob.download_as_text()
+
+def get_string_from_most_recent_blob(bucket_name, credentials_file):
+    # Initialize the Google Cloud Storage client with the credentials
+    storage_client = storage.Client.from_service_account_json(credentials_file)
+
+    blobs = storage_client.list_blobs(bucket_name)
+    sorted_blobs = sorted(blobs, key=lambda blob: blob.time_created)
+    return sorted_blobs[-1].download_as_text()
