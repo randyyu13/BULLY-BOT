@@ -28,13 +28,14 @@ async def on_ready():
 @bot.command()
 async def p(ctx):
     try:
-        file_content = get_string_from_most_recent_blob('plays-bucket', 'google-credentials.json')
+        blob = get_most_recent_blob('plays-bucket', 'google-credentials.json')
         
         embed = Embed(
             title='Plays of the Hour',
             color = discord.Colour.dark_purple(),
-            description=file_content
+            description=blob.download_as_text()
         )
+        embed.set_footer(text = f'Last updated {int((datetime.datetime.now(pytz.UTC) - blob.time_created).total_seconds() / 60)} minutes ago')
         await ctx.send(embed=embed)
     except FileNotFoundError:
         print(f'no files in bucket')
