@@ -7,6 +7,7 @@ from discord.ext import commands
 import os
 from discord import *
 import discord
+from gcp_proxy import *
 
 load_dotenv()
 # STEP 1: BOT SETUP
@@ -31,8 +32,7 @@ async def P(ctx):
     output_file_name = f"output_{timestamp_string}.txt"
     
     try:
-        with open(output_file_name, 'r') as file:
-            file_content = file.read()
+        file_content = get_string_from_gcs_bucket('plays-bucket', output_file_name, 'google-credentials.json')
         
         embed = Embed(
             title='Plays of the Hour',
