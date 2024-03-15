@@ -78,7 +78,7 @@ def find_good_lines(df):
     old_player = df.iloc[0]['name']
     with sync_playwright() as p:
         # print("launching browser")
-        browser = p.chromium.launch()
+        browser = p.chromium.launch(executable_path=os.getenv("CHROMIUM_EXECUTABLE_PATH"))
         page = browser.new_page()
         prop_cards = go_to_covers_page(page, old_player)
         
