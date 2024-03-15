@@ -5,7 +5,8 @@ import datetime
 import pytz
 from discord.ext import commands
 import os
-from discord import Intents, Client
+from discord import *
+import discord
 
 load_dotenv()
 # STEP 1: BOT SETUP
@@ -32,7 +33,12 @@ async def P(ctx):
     try:
         with open(output_file_name, 'r') as file:
             file_content = file.read()
-        await ctx.send(file_content)
+        
+        embed = Embed(
+            color = discord.Colour.dark_purple,
+            title=file_content
+        )
+        await ctx.send(embed)
     except FileNotFoundError:
         print(f'file {output_file_name} was not found!')
 
