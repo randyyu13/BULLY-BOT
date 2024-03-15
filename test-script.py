@@ -38,6 +38,8 @@ if(response.status_code == 200):
     only_nba_players = mappings[mappings['attributes.league'] == 'NBA']
     
     standard_lines = all_projections[all_projections['attributes.odds_type'] == 'standard']
+
+    # filtering out some restarted stats no one bets on
     standard_lines = standard_lines[[int(id) < 300 for id in standard_lines['relationships.stat_type.data.id']]]
     standard_lines = standard_lines[[int(id) > 15 for id in standard_lines['relationships.stat_type.data.id']]]
     standard_lines = standard_lines[[int(id) != 68 for id in standard_lines['relationships.stat_type.data.id']]]
