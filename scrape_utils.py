@@ -43,8 +43,8 @@ def get_prize_picks_payload():
     return response
 
 def parse_payload(response):
-    print(f'STATUS OK {response.status_code}')
     if(response.status_code == 200):
+        print(f'STATUS OK {response.status_code}')
         mappings = pd.json_normalize(response.json()['included'])
         all_projections = pd.json_normalize(response.json()['data'])
 
@@ -117,15 +117,15 @@ def find_good_lines(df):
                             print(temp_line)
                         elif current_line < over_line and over_odds < -100:
                             temp_line = f'{current_player} OVER {current_line} {current_stat} DISCOUNT Original line {over_line} {over_odds}'
-                            print(f'{current_player} OVER {current_line} {current_stat} DISCOUNT Original line {over_line} {over_odds}')    
+                            print(temp_line)    
 
                     if current_line >= under_line:
                         if under_odds <= -128:
                             temp_line = f'{current_player} UNDER {current_line} {current_stat} {under_odds}'
-                            print(f'{current_player} UNDER {current_line} {current_stat} {under_odds}')
+                            print(temp_line)
                         elif current_line > under_line and under_odds < -100:
                             temp_line = f'{current_player} UNDER {current_line} {current_stat} DISCOUNT Original line {under_line} {under_odds}'
-                            print(f'{current_player} UNDER {current_line} {current_stat} DISCOUNT Original line {under_line} {under_odds}')
+                            print(temp_line)
                     if len(temp_line) > 0:
                         good_lines.append(temp_line)
     return good_lines
