@@ -35,10 +35,11 @@ async def P(ctx):
             file_content = file.read()
         
         embed = Embed(
-            color = discord.Colour.dark_purple,
-            title=file_content
+            title='Plays of the Hour',
+            color = discord.Colour.dark_purple(),
+            description=file_content
         )
-        await ctx.send(embed)
+        await ctx.send(embed=embed)
     except FileNotFoundError:
         print(f'file {output_file_name} was not found!')
 
