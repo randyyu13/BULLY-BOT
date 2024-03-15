@@ -26,7 +26,7 @@ async def on_ready():
 
 # Command to make the bot say hello world
 @bot.command()
-async def P(ctx):
+async def p(ctx):
     try:
         file_content = get_string_from_most_recent_blob('plays-bucket', 'google-credentials.json')
         
