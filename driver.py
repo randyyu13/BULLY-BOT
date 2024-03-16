@@ -35,7 +35,7 @@ async def p(ctx):
             color = discord.Colour.dark_purple(),
             description=blob.download_as_text()
         )
-        embed.set_footer(text = f'Last updated {int((datetime.datetime.now(pytz.UTC) - blob.time_created).total_seconds() / 60)} minutes ago')
+        embed.set_footer(text = f'Last updated {int((datetime.datetime.now(pytz.UTC) - blob.time_created).total_seconds() / 60)} minutes ago', icon_url='https://assets-global.website-files.com/64b5f8bfc12b3ec8aef889d7/64d122a8beae431f37543dae_PrizePicks_On-Dark.svg')
         await ctx.send(embed=embed)
     except FileNotFoundError:
         print(f'no files in bucket')
