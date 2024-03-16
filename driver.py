@@ -31,10 +31,10 @@ async def p(ctx):
         blob = get_most_recent_blob('plays-bucket', 'google-credentials.json')
         
         embed = Embed(
-            title='Plays of the Hour',
             color = discord.Colour.dark_purple(),
             description=blob.download_as_text()
         )
+        embed.set_author(name="Plays of the Hour", icon_url='https://s3.us-west-1.amazonaws.com/redwood-labs/showpage/uploads/images/e9c2fa72-aee2-4782-9d90-e7113cad3424.png')
         embed.set_footer(text = f'Last updated {int((datetime.datetime.now(pytz.UTC) - blob.time_created).total_seconds() / 60)} minutes ago')
         await ctx.send(embed=embed)
     except FileNotFoundError:
