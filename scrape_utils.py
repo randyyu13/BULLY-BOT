@@ -5,6 +5,7 @@ import os
 
 
 stat_id_to_stat_mappings = {'24': 'Total Turnovers', '31': '3 Pointers Made', '22': 'Total Rebounds', '243': 'Points and Rebounds', '19': 'Points Scored', '244': 'Points and Assists', '21': 'Total Blocks', '20': 'Total Assists', '245': 'Rebounds and Assists', '23': 'Total Steals', '106': 'Total Points, Rebounds, and Assists', '105': 'Steals and Blocks'}
+odds_to_emoji_mappings = {128: ' :neutral_face:', 130 : ':coin: :ok_hand:', 140 : ':moneybag: :cold_face:', 150 : ':money_mouth: :fire: :lock:', 'discount': ':four_leaf_clover:'}
 
 def go_to_covers_page(page, old_player):
     page.goto('https://www.bing.com/')
@@ -27,9 +28,22 @@ def go_to_covers_page(page, old_player):
     try:
         page.wait_for_selector('.covers-CoversPlayer-Prop-Event')
     except:
+        print("timed out waiting for cards")
         return []
     all_cards = page.query_selector_all('.covers-CoversPlayer-Prop-Event')
     return all_cards
+
+def go_to_KCP(page):
+    print('KCP is a bum')
+    page.goto('https://www.covers.com/sport/basketball/nba/players/743/kentavious-caldwell-pope')
+    try:
+        page.wait_for_selector('.covers-CoversPlayer-Prop-Event')
+    except:
+        print("timed out waiting for cards")
+        return []
+    all_cards = page.query_selector_all('.covers-CoversPlayer-Prop-Event')
+    return all_cards
+
 
 def get_prize_picks_payload():
     so_api_key = os.getenv("SO_ACCESS_KEY")
@@ -80,7 +94,11 @@ def find_good_lines(df):
         # print("launching browser")
         browser = p.chromium.launch(executable_path=os.getenv("CHROMIUM_EXECUTABLE_PATH"))
         page = browser.new_page()
-        prop_cards = go_to_covers_page(page, old_player)
+        prop_cards = []
+        if old_player == 'Kentavious Caldwell-Pope':
+            prop_cards = go_to_KCP(page)
+        else:
+            prop_cards = go_to_covers_page(page, old_player)
         
         for index, projection in df.iterrows():
             # print(index)
@@ -91,7 +109,10 @@ def find_good_lines(df):
                 # current player is now old player
                 # need to change pages now.
                 old_player = current_player
-                prop_cards = go_to_covers_page(page, old_player)
+                if old_player == 'Kentavious Caldwell-Pope':
+                    prop_cards = go_to_KCP(page)
+                else:
+                    prop_cards = go_to_covers_page(page, old_player)
 
             # can look for the stat on the page, print if its good line.
             for card in prop_cards:
@@ -110,22 +131,57 @@ def find_good_lines(df):
                     under_odds = float(under_line_and_odds[1])
 
                     
-                    temp_line = ""
-                    if current_line <= over_line:
-                        if over_odds <= -128:
-                            temp_line = f'{current_player} OVER {current_line} {current_stat} {over_odds}'
-                            print(temp_line)
-                        elif over_line - current_line >= 1.5 and over_odds < -100:
-                            temp_line = f'{current_player} OVER {current_line} {current_stat} DISCOUNT Original line {over_line} {over_odds}'
-                            print(temp_line)    
-
-                    if current_line >= under_line:
-                        if under_odds <= -128:
-                            temp_line = f'{current_player} UNDER {current_line} {current_stat} {under_odds}'
-                            print(temp_line)
-                        elif current_line - under_line >= 1.5 and under_odds < -100:
-                            temp_line = f'{current_player} UNDER {current_line} {current_stat} DISCOUNT Original line {under_line} {under_odds}'
-                            print(temp_line)
+                    temp_line = evaluate_line(over_line, under_line, over_odds, under_odds, current_player, current_line, current_stat)
                     if len(temp_line) > 0:
                         good_lines.append(temp_line)
-    return good_lines
+    print("sorting the good lines")
+    sorted_lines = sorted(good_lines, key=lambda line: get_odds_from_line(line))
+    return sorted_lines
+
+def evaluate_line(over_line, under_line, over_odds, under_odds, current_player, current_line, current_stat):
+    temp_line = ""
+    emoji = ""
+    
+    if current_line <= over_line:
+        if over_odds <= -128:
+            emoji = odds_to_emoji_mappings[128]
+            if over_odds <= -130:
+                emoji = odds_to_emoji_mappings[130]
+                if over_odds <= -140:
+                    emoji = odds_to_emoji_mappings[140]
+                    if over_odds <= -150:
+                        emoji = odds_to_emoji_mappings[150]
+            temp_line = f'{current_player} OVER :arrow_up_small: {current_line} {current_stat} {over_odds}  {emoji}'
+        elif over_line - current_line >= 1.5 and over_odds < -100:
+            emoji = odds_to_emoji_mappings['discount']
+            temp_line = f'{current_player} OVER :arrow_up_small: {current_line} {current_stat} DISCOUNT Original line {over_line} {over_odds}  {emoji}'
+
+    if current_line >= under_line:
+        if under_odds <= -128:
+            emoji = odds_to_emoji_mappings[128]
+            if under_odds <= -130:
+                emoji = odds_to_emoji_mappings[130]
+                if under_odds <= -140:
+                    emoji = odds_to_emoji_mappings[140]
+                    if under_odds <= -150:
+                        emoji = odds_to_emoji_mappings[150]
+            temp_line = f'{current_player} UNDER :arrow_down_small: {current_line} {current_stat} {under_odds}  {emoji}'
+        elif current_line - under_line >= 1.5 and under_odds < -100:
+            emoji = odds_to_emoji_mappings['discount']
+            temp_line = f'{current_player} UNDER :arrow_down_small: {current_line} {current_stat} DISCOUNT Original line {under_line} {under_odds}  {emoji}'
+    if len(temp_line) > 0:
+        print(temp_line)
+    return temp_line
+
+def get_odds_from_line(line):
+    line_arr = line.split(' ')
+    odds = 0
+    for curr in reversed(line_arr):
+        if(len(curr) == 0):
+            continue
+        if curr[0] == '-':
+            odds = int(float(curr))
+            # print(odds)
+        elif curr == ':four_leaf_clover':
+            return -210
+    return odds
