@@ -174,14 +174,21 @@ def evaluate_line(over_line, under_line, over_odds, under_odds, current_player, 
     return temp_line
 
 def get_odds_from_line(line):
-    line_arr = line.split(' ')
+    line_arr = line.split()
     odds = 0
     for curr in reversed(line_arr):
-        if(len(curr) == 0):
-            continue
         if curr[0] == '-':
             odds = int(float(curr))
             # print(odds)
         elif curr == ':four_leaf_clover:':
             return -210
     return odds
+
+def contains_lock(text):
+    split_text = text.split()
+    for curr in split_text:
+        if curr[0] == '-':
+            odds = int(float(curr))
+            if(odds <= -150):
+                return True
+    return False
