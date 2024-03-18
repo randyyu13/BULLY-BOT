@@ -182,6 +182,6 @@ def get_odds_from_line(line):
         if curr[0] == '-':
             odds = int(float(curr))
             # print(odds)
-        elif curr == ':four_leaf_clover':
+        elif curr == ':four_leaf_clover:':
             return -210
     return odds
