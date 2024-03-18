@@ -23,12 +23,12 @@ async def on_ready():
 async def p(ctx):
     await ctx.send("any updates are now provided automatically")
 
-@tasks.loop(minutes=1)
+@tasks.loop(minutes=15)
 async def look_for_update():
     blob = get_most_recent_blob('plays-bucket', 'google-credentials.json')
     minutes_since_update = int((datetime.datetime.now(pytz.UTC) - blob.time_created).total_seconds() / 60)
     print(minutes_since_update)
-    if(minutes_since_update <= 60):
+    if(minutes_since_update <= 15):
         await post_most_recent_lines(blob, minutes_since_update)
 
 async def post_most_recent_lines(blob, minutes):
