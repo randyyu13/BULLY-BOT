@@ -32,7 +32,6 @@ async def look_for_update():
         await post_most_recent_lines(blob, minutes_since_update)
 
 async def post_most_recent_lines(blob, minutes):
-    channel = bot.get_channel(1217819822939701358) # sports betting channel
     all_lines = blob.download_as_text()
     embed = Embed(
         color = Colour.dark_purple(),
@@ -40,13 +39,18 @@ async def post_most_recent_lines(blob, minutes):
     )
     embed.set_author(name="Plays of the Hour", icon_url='https://s3.us-west-1.amazonaws.com/redwood-labs/showpage/uploads/images/e9c2fa72-aee2-4782-9d90-e7113cad3424.png')
     embed.set_footer(text = f'Last updated {minutes} minutes ago')
-    if(contains_lock(all_lines)):
-        try:
-            role = utils.get(guild.roles,name="gamblers")
-            await channel.send(f'@{role.mention}')
-        except:
-            print("role not found")
-    await channel.send(embed=embed)
+    for curr_guild in bot.guilds:
+        # sports betting channel
+        channel = utils.get(curr_guild.channels, name="sports-betting")
+        if(contains_lock(all_lines)):
+            try:
+                role = utils.get(curr_guild.roles,name="gamblers")
+                await channel.send(f'{role.mention}')
+            except:
+                print("role not found")
+        else:
+            print("does not contain lock")
+        await channel.send(embed=embed)
 
 disc_token = os.getenv("DISCORD_TOKEN")
 bot.run(token=disc_token)
