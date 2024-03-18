@@ -45,9 +45,11 @@ async def post_most_recent_lines(blob, minutes):
         if(contains_lock(all_lines)):
             try:
                 role = utils.get(curr_guild.roles,name="gamblers")
-                await channel.send(f'@{role.mention}')
+                await channel.send(f'{role.mention}')
             except:
                 print("role not found")
+        else:
+            print("does not contain lock")
         await channel.send(embed=embed)
 
 disc_token = os.getenv("DISCORD_TOKEN")
