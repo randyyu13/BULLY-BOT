@@ -3,44 +3,43 @@ from scrape_utils import *
 from misc_utils import *
 import datetime
 import pytz
-from discord.ext import commands
+from discord.ext import commands, tasks
 import os
 from discord import *
-import discord
 from gcp_proxy import *
 
 load_dotenv()
 # STEP 1: BOT SETUP
-intents: Intents = Intents.default()
-intents.message_content = True  # NOQA
-client: Client = Client(intents=intents)
+intents=Intents().all()
 
 bot = commands.Bot(command_prefix='$', intents=intents)
-
-def file_exists(filename):
-    return os.path.isfile(filename)
 
 @bot.event
 async def on_ready():
     print(f'{bot.user.name} has connected to Discord!')
+    look_for_update.start()
 
-# Command to make the bot say hello world
 @bot.command()
 async def p(ctx):
-    try:
-        blob = get_most_recent_blob('plays-bucket', 'google-credentials.json')
-        
-        embed = Embed(
-            color = discord.Colour.dark_purple(),
-            description=blob.download_as_text()
-        )
-        embed.set_author(name="Plays of the Hour", icon_url='https://s3.us-west-1.amazonaws.com/redwood-labs/showpage/uploads/images/e9c2fa72-aee2-4782-9d90-e7113cad3424.png')
-        embed.set_footer(text = f'Last updated {int((datetime.datetime.now(pytz.UTC) - blob.time_created).total_seconds() / 60)} minutes ago')
-        await ctx.send(embed=embed)
-    except FileNotFoundError:
-        print(f'no files in bucket')
+    await ctx.send("any updates are now provided automatically")
 
+@tasks.loop(minutes=15)
+async def look_for_update():
+    blob = get_most_recent_blob('plays-bucket', 'google-credentials.json')
+    minutes_since_update = int((datetime.datetime.now(pytz.UTC) - blob.time_created).total_seconds() / 60)
+    print(minutes_since_update)
+    if(minutes_since_update <= 15):
+        await post_most_recent_lines(blob, minutes_since_update)
+
+async def post_most_recent_lines(blob, minutes):
+    channel = bot.get_channel(988173442778038294) # sports betting channel
+    embed = Embed(
+        color = Colour.dark_purple(),
+        description=blob.download_as_text()
+    )
+    embed.set_author(name="Plays of the Hour", icon_url='https://s3.us-west-1.amazonaws.com/redwood-labs/showpage/uploads/images/e9c2fa72-aee2-4782-9d90-e7113cad3424.png')
+    embed.set_footer(text = f'Last updated {minutes} minutes ago')
+    await channel.send(embed=embed)
 
 disc_token = os.getenv("DISCORD_TOKEN")
-print(disc_token)
 bot.run(token=disc_token)
