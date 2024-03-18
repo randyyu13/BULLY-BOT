@@ -41,7 +41,7 @@ async def post_most_recent_lines(blob, minutes):
     embed.set_footer(text = f'Last updated {minutes} minutes ago')
     for curr_guild in bot.guilds:
         # sports betting channel
-        channel = utils.get(curr_guild.channels, name="sports-betting")
+        channel = utils.get(curr_guild.channels, name="sports-betting-bot")
         if(contains_lock(all_lines)):
             try:
                 role = utils.get(curr_guild.roles,name="gamblers")
