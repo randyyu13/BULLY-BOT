@@ -141,6 +141,12 @@ def find_good_lines(df):
 def evaluate_line(over_line, under_line, over_odds, under_odds, current_player, current_line, current_stat):
     temp_line = ""
     emoji = ""
+    if(current_player == "Nicolas Claxton"):
+        current_player += " (Hitler)"
+    elif(current_player == "Myles Turner"):
+        current_player += " (Stalin)"
+    elif(current_player == "Tyrese Haliburton"):
+        current_player += " (Mussolini)"
     
     if current_line <= over_line:
         if over_odds <= -128:
