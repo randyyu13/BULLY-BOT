@@ -1,43 +1,63 @@
-import { Rettiwt, Tweet } from 'rettiwt-api';
+import { Rettiwt } from 'rettiwt-api';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-// Creating a new Rettiwt instance using the given 'API_KEY'
-var token = 'a2R0PWgwUEVmbEtRTk05MVlDOElIbXJEM0dBRzJabkhtaEM1V2gyRGRUNU87dHdpZD0idT0xNzcxNzYxOTQzMzAyMzE2MDMyIjtjdDA9OWEwNDQ0NTE4YmQ1YTVjMTgyYzU5YWVhZTAzMTI0MTI7YXV0aF90b2tlbj0xYWU4ZmRmNWI5M2Y3NGU0Y2QxNjY3NzkxYzA3ZjQxMWQxMzFiMDhmOw=='
-const rettiwt = new Rettiwt({ apiKey: token });
-// the reason Im storing cappers ids instead of names is that in the case they change twitter handles, there will be no need to update the array with it. Permanence.
-// austinsprops, DoctorProfit, AlexCaruso
-// let capper_ids = ["1426243706491871232"];
-let capper_ids = ["1426243706491871232", "1474155823651827724", "1287093476757319680"];
+// Initialize Rettiwt instance with API key
+const apiKey = 'a2R0PWgwUEVmbEtRTk05MVlDOElIbXJEM0dBRzJabkhtaEM1V2gyRGRUNU87dHdpZD0idT0xNzcxNzYxOTQzMzAyMzE2MDMyIjtjdDA9OWEwNDQ0NTE4YmQ1YTVjMTgyYzU5YWVhZTAzMTI0MTI7YXV0aF90b2tlbj0xYWU4ZmRmNWI5M2Y3NGU0Y2QxNjY3NzkxYzA3ZjQxMWQxMzFiMDhmOw==';
+const rettiwt = new Rettiwt({ apiKey });
 
-let all_tweets = [];
-for(let id of capper_ids) {
-     // get last 5 tweets, pipe entire output into json.
-     // json can then be passed into google bucket
-     // should everything be 1 temp file? I would like to think so
-     var last_5_tweets = [];
-    try {
-        const res = await rettiwt.user.timeline(id, 5);
-        last_5_tweets = res.list;
-        console.log(last_5_tweets.length)
-        // Code that relies on last_5_tweets being updated goes here
-    } catch (error) {
-        console.log(error);
+// Array of capper IDs
+const capperIds = ["1426243706491871232", "1474155823651827724", "1287093476757319680"];
+
+// Function to process tweets
+async function processTweets(capperIds) {
+    const allTweets = [];
+    
+    for (const id of capperIds) {
+        try {
+            const res = await rettiwt.user.timeline(id, 5);
+            const last5Tweets = res.list.slice(0, 5);
+
+            const parsedTweets = last5Tweets.map(twt => ({
+                capper_name: twt.tweetBy.userName,
+                tweet_id: twt.id,
+                time_created: twt.createdAt,
+                content: twt.fullText
+            }));
+
+            allTweets.push([id, parsedTweets]);
+        } catch (error) {
+            console.log(`Error fetching tweets for capper with ID ${id}:`, error);
+        }
     }
-    // console.log(last_5_tweets)
-    let last_5_parsed_tweet_data = []
-    //  console.log(last_5_tweets.length)
-    // console.log(last_5_tweets[0])
-     for(let i = 0; i < 5; i++) {
-        // console.log(i)
-        let twt = last_5_tweets[i]
-        // console.log(last_5_tweets[i])
-        let parsed_twt = []
-        parsed_twt.push(twt.id)
-        parsed_twt.push(twt.createdAt)
-        parsed_twt.push(twt.fullText)
-        last_5_parsed_tweet_data.push(parsed_twt)
-     }
-     let id_and_last_5_tweets = [id, last_5_parsed_tweet_data]
-     all_tweets.push(id_and_last_5_tweets)
+
+    return allTweets;
 }
-// console.log("all tweets")
-console.log(all_tweets)
+
+// Function to write JSON files
+async function writeJsonFiles(allTweets) {
+    const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+    for (const [id, tweets] of allTweets) {
+        const fileName = `${id}.json`;
+        const filePath = path.join(__dirname, 'recent_tweets', fileName);
+        const jsonData = JSON.stringify(tweets, null, 2);
+
+        try {
+            await fs.promises.writeFile(filePath, jsonData);
+            console.log(`JSON file created successfully for capper with ID ${id}:`, filePath);
+        } catch (err) {
+            console.error(`Error writing JSON file for capper with ID ${id}:`, err);
+        }
+    }
+}
+
+// Main function to execute tasks
+async function main() {
+    const allTweets = await processTweets(capperIds);
+    await writeJsonFiles(allTweets);
+}
+
+// Call main function
+main().catch(err => console.error('An error occurred:', err));
