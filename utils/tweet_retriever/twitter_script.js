@@ -10,7 +10,7 @@ const apiKey = process.env.TWITTER_KEY;
 const rettiwt = new Rettiwt({ apiKey });
 
 // Array of capper IDs
-const capperIds = ["1426243706491871232", "1474155823651827724", "1287093476757319680"];
+const capperIds = ["1426243706491871232", "1474155823651827724", "1287093476757319680", "950916960010809344"];
 
 // Function to process tweets
 async function processTweets(capperIds) {
