@@ -66,7 +66,7 @@ async def post_most_recent_tweets(blob):
         minutes_since_tweet_creation = find_minutes_since_given_datetime(parse_datetime(tweet_map['time_created']))
         print(tweet_map['capper_name'])
         print(f'minutes since tweet creation {minutes_since_tweet_creation}')
-        if(minutes_since_tweet_creation < 15):
+        if(minutes_since_tweet_creation < 10):
             player_prop = get_player_prop_from_tweet(tweet_map['content'])
             if(player_prop):
                 embed = Embed(
