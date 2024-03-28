@@ -3,9 +3,10 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { Storage } from '@google-cloud/storage'
+import 'dotenv/config'
 
 // Initialize Rettiwt instance with API key
-const apiKey = 'a2R0PWgwUEVmbEtRTk05MVlDOElIbXJEM0dBRzJabkhtaEM1V2gyRGRUNU87dHdpZD0idT0xNzcxNzYxOTQzMzAyMzE2MDMyIjtjdDA9OWEwNDQ0NTE4YmQ1YTVjMTgyYzU5YWVhZTAzMTI0MTI7YXV0aF90b2tlbj0xYWU4ZmRmNWI5M2Y3NGU0Y2QxNjY3NzkxYzA3ZjQxMWQxMzFiMDhmOw==';
+const apiKey = process.env.TWITTER_KEY;
 const rettiwt = new Rettiwt({ apiKey });
 
 // Array of capper IDs
@@ -55,13 +56,13 @@ async function writeJsonFiles(allTweets) {
 }
 
 async function writeToGoogleBucket(allTweets) {
-    const keyFilename = './../../google-credentials.json';
+    const keyFilename = './google-credentials.json';
     const storage = new Storage({ keyFilename });
     const bucketName = 'tweets-bucket-1';
 
     for(const [id, tweets] of allTweets) {
         const fileName = id + '.json';
-        const filePath = 'recent_tweets/' + fileName; // Replace with the path to your local file
+        const filePath = './utils/tweet_retriever/recent_tweets/' + fileName; // Replace with the path to your local file
         const destination = fileName; // Replace with the destination path in the bucket
         
         try {

@@ -71,7 +71,9 @@ async def post_most_recent_tweets(blob):
                 embed = Embed(
                     color = Colour.blue()
                 )
-                tweet_link = f'https://twitter.com/{tweet_map['capper_name']}/status/{tweet_map['tweet_id']}'
+                capper_name = tweet_map['capper_name']
+                tweet_id = tweet_map['tweet_id']
+                tweet_link = f'https://twitter.com/{capper_name}/status/{tweet_id}'
                 embed.add_field(name=player_prop, value=f'[Link to Tweet]({tweet_link})')
                 embed.set_author(name=tweet_map['capper_name'])
                 embed.set_footer(text = f'{minutes_since_tweet_creation} minutes ago. This feature is in testing')
