@@ -1,7 +1,7 @@
 __pycache__/
 .env
 .txt
-.json
+google-credentials.json
 
 node_modules
 
