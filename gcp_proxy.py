@@ -32,3 +32,11 @@ def get_most_recent_blob(bucket_name, credentials_file):
     blobs = storage_client.list_blobs(bucket_name)
     sorted_blobs = sorted(blobs, key=lambda blob: blob.time_created)
     return sorted_blobs[-1]
+
+def get_all_blobs(bucket_name, credentials_file):
+    # Initialize the Google Cloud Storage client with the credentials
+    storage_client = storage.Client.from_service_account_json(credentials_file)
+
+    blobs = storage_client.list_blobs(bucket_name)
+    sorted_blobs = sorted(blobs, key=lambda blob: blob.time_created)
+    return sorted_blobs

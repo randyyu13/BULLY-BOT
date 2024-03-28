@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/randyyu13/BULLY-BOT#readme",
   "dependencies": {
+    "@google-cloud/storage": "^7.9.0",
     "rettiwt-api": "^2.6.2"
   }
 }

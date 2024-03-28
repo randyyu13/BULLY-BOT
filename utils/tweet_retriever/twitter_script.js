@@ -2,6 +2,7 @@ import { Rettiwt } from 'rettiwt-api';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { Storage } from '@google-cloud/storage'
 
 // Initialize Rettiwt instance with API key
 const apiKey = 'a2R0PWgwUEVmbEtRTk05MVlDOElIbXJEM0dBRzJabkhtaEM1V2gyRGRUNU87dHdpZD0idT0xNzcxNzYxOTQzMzAyMzE2MDMyIjtjdDA9OWEwNDQ0NTE4YmQ1YTVjMTgyYzU5YWVhZTAzMTI0MTI7YXV0aF90b2tlbj0xYWU4ZmRmNWI5M2Y3NGU0Y2QxNjY3NzkxYzA3ZjQxMWQxMzFiMDhmOw==';
@@ -53,10 +54,41 @@ async function writeJsonFiles(allTweets) {
     }
 }
 
+async function writeToGoogleBucket(allTweets) {
+    const keyFilename = './../../google-credentials.json';
+    const storage = new Storage({ keyFilename });
+    const bucketName = 'tweets-bucket-1';
+
+    for(const [id, tweets] of allTweets) {
+        const fileName = id + '.json';
+        const filePath = 'recent_tweets/' + fileName; // Replace with the path to your local file
+        const destination = fileName; // Replace with the destination path in the bucket
+        
+        try {
+            await storage.bucket(bucketName).upload(filePath, {
+                destination: destination,
+            });
+            console.log(`${filePath} uploaded to ${bucketName}/${destination}.`);
+
+            // Delete the local JSON file after successful upload
+            try {
+                await fs.promises.unlink(filePath);
+                console.log(`${filePath} deleted successfully.`);
+            } catch (deleteErr) {
+                console.error(`Error deleting file ${filePath}:`, deleteErr);
+            }
+        } catch (uploadErr) {
+            console.error('Error uploading file:', uploadErr);
+        }
+    }
+
+}
+
 // Main function to execute tasks
 async function main() {
     const allTweets = await processTweets(capperIds);
     await writeJsonFiles(allTweets);
+    await writeToGoogleBucket(allTweets);
 }
 
 // Call main function

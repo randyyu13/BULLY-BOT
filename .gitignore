@@ -2,3 +2,6 @@ __pycache__/
 .env
 .txt
 .json
+
+node_modules
+

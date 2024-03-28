@@ -147,6 +147,9 @@ def evaluate_line(over_line, under_line, over_odds, under_odds, current_player, 
         current_player += " (Stalin)"
     elif(current_player == "Tyrese Haliburton"):
         current_player += " (Mussolini)"
+    elif(current_player == "Gary Trent Jr."):
+        current_player += " (Attila)"
+
     
     if current_line <= over_line:
         if over_odds <= -128:
