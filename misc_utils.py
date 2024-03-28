@@ -4,7 +4,7 @@ import pytz
 import os
 from openai import OpenAI
 
-GPT_QUESTION = 'If the following text is a single player prop for a future game in the context of sports betting, respond with the prop itself. Otherwise, respond with null. Additionally, respond with null if the text includes the token "RT @", "✅" or if there are multiple props:'
+GPT_QUESTION = 'If the following text is a single player prop for a future game in the context of sports betting, respond with the prop itself (dont change the wording of the prop too much in your response). Otherwise, respond with null. Additionally, respond with null if the text includes the token "RT @", "✅" or if there are multiple props'
 
 def write_array_to_file(array, filename):
     with open(filename, 'w') as file:
@@ -35,7 +35,8 @@ def get_player_prop_from_tweet(tweet_content):
     completion = client.chat.completions.create(
     model="gpt-3.5-turbo",
     messages=[
-        {"role": "user", "content": f'{GPT_QUESTION}\n{tweet_content}'}
+        {"role": "system", "content": GPT_QUESTION},
+        {"role": "user", "content": tweet_content}
     ]
     )
     ai_output = completion.choices[0].message.content
