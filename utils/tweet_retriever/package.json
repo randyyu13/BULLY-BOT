@@ -1,0 +1,29 @@
+{
+  "name": "tweet_retriever",
+  "version": "1.0.0",
+  "description": "retrieves tweets for bully bot",
+  "main": "twitter_script.js",
+  "type": "module",
+  "scripts": {
+    "test": "test_twt"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/randyyu13/BULLY-BOT.git"
+  },
+  "keywords": [
+    "sports",
+    "betting"
+  ],
+  "author": "Randy Yu",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/randyyu13/BULLY-BOT/issues"
+  },
+  "homepage": "https://github.com/randyyu13/BULLY-BOT#readme",
+  "dependencies": {
+    "@google-cloud/storage": "^7.9.0",
+    "dotenv": "^16.4.5",
+    "rettiwt-api": "^2.6.2"
+  }
+}
