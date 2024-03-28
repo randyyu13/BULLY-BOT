@@ -22,7 +22,6 @@ def unpackage_tweets_json(tweets_json):
             "time_created": item["time_created"],
             "content": item["content"]
         })
-    print(result)
     return result
 
 def find_minutes_since_given_datetime(dt):
