@@ -72,7 +72,7 @@ async def post_most_recent_tweets(blob, minutes):
             embed.set_author(name=tweet_map['capper_name'])
             embed.set_footer(text = f'Last updated {minutes} minutes ago. This feature is in testing')
             for curr_guild in bot.guilds:
-                # sports betting channel
+                # tweet channel
                 try:
                     channel = utils.get(curr_guild.channels, name="tweet-test")
                     await channel.send(embed=embed)
