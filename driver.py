@@ -15,7 +15,7 @@ bot = commands.Bot(command_prefix='$', intents=intents)
 async def on_ready():
     print(f'{bot.user.name} has connected to Discord!')
     look_for_update.start()
-    # look_for_twitter_update.start()
+    look_for_tweet_update.start()
 
 @bot.command()
 async def p(ctx):
@@ -24,13 +24,15 @@ async def p(ctx):
 @tasks.loop(minutes=5)
 async def look_for_update():
     value_lines_blob = get_most_recent_blob('plays-bucket', 'google-credentials.json')
-    tweet_blobs = get_all_blobs('tweets-bucket-1', 'google-credentials.json')
-
     minutes_since_update = find_minutes_since_given_datetime(value_lines_blob.time_created)
     
     if(minutes_since_update < 5):
         print(minutes_since_update)
         await post_most_recent_lines(value_lines_blob, minutes_since_update)
+
+@tasks.loop(minutes=1)
+async def look_for_tweet_update():
+    tweet_blobs = get_all_blobs('tweets-bucket-1', 'google-credentials.json')
 
     for tweet_blob in tweet_blobs:
         minutes_since_update = find_minutes_since_given_datetime(tweet_blob.time_created)
@@ -66,7 +68,7 @@ async def post_most_recent_tweets(blob):
         minutes_since_tweet_creation = find_minutes_since_given_datetime(parse_datetime(tweet_map['time_created']))
         print(tweet_map['capper_name'])
         print(f'minutes since tweet creation {minutes_since_tweet_creation}')
-        if(minutes_since_tweet_creation < 10):
+        if(minutes_since_tweet_creation < 6):
             player_prop = get_player_prop_from_tweet(tweet_map['content'])
             if(player_prop):
                 embed = Embed(
