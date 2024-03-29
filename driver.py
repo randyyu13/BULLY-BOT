@@ -30,7 +30,7 @@ async def look_for_update():
         print(minutes_since_update)
         await post_most_recent_lines(value_lines_blob, minutes_since_update)
 
-@tasks.loop(minutes=1)
+@tasks.loop(minutes=3)
 async def look_for_tweet_update():
     tweet_blobs = get_all_blobs('tweets-bucket-1', 'google-credentials.json')
 
