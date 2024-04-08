@@ -30,14 +30,14 @@ async def look_for_update():
         print(minutes_since_update)
         await post_most_recent_lines(value_lines_blob, minutes_since_update)
 
-@tasks.loop(minutes=3)
+@tasks.loop(minutes=1)
 async def look_for_tweet_update():
     tweet_blobs = get_all_blobs('tweets-bucket-1', 'google-credentials.json')
 
     for tweet_blob in tweet_blobs:
         minutes_since_update = find_minutes_since_given_datetime(tweet_blob.time_created)
         print(minutes_since_update)
-        if(minutes_since_update < 5):
+        if(minutes_since_update < 1):
             await post_most_recent_tweets(tweet_blob)
 
 async def post_most_recent_lines(blob, minutes):
@@ -68,8 +68,12 @@ async def post_most_recent_tweets(blob):
         minutes_since_tweet_creation = find_minutes_since_given_datetime(parse_datetime(tweet_map['time_created']))
         print(tweet_map['capper_name'])
         print(f'minutes since tweet creation {minutes_since_tweet_creation}')
-        if(minutes_since_tweet_creation < 6):
+        if(minutes_since_tweet_creation < 2):
             player_prop = get_player_prop_from_tweet(tweet_map['content'])
+            if(not check_blob_existence('tweet-cache', tweet_map['tweet_id'], 'google-credentials.json')):
+                write_to_file(tweet_map['tweet_id'])
+            else:
+                continue
             if(player_prop):
                 embed = Embed(
                     color = Colour.blue()

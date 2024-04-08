@@ -37,3 +37,13 @@ def get_most_recent_blob(bucket_name, credentials_file):
     # Initialize the Google Cloud Storage client with the credentials
     sorted_blobs = get_all_blobs(bucket_name, credentials_file)
     return sorted_blobs[-1]
+
+def check_blob_existence(bucket_name, blob_name, credentials_file):
+    storage_client = storage.Client.from_service_account_json(credentials_file)
+    
+    # Get the bucket
+    bucket = storage_client.bucket(bucket_name)
+    
+    # Check if the blob exists
+    blob = bucket.blob(blob_name)
+    return blob.exists()

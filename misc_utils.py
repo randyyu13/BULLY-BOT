@@ -13,6 +13,12 @@ def write_array_to_file(array, filename):
     upload_to_gcs('plays-bucket', filename, filename, "google-credentials.json")
     os.remove(filename)
 
+def write_to_file(tweet_id):
+    with open(tweet_id, 'w') as file:
+        file.write()
+    upload_to_gcs('tweet-cache', tweet_id, tweet_id, 'google-credentials.json')
+    os.remove(tweet_id)
+
 def unpackage_tweets_json(tweets_json):
     result = []
     for item in tweets_json:
