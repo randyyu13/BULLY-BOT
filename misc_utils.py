@@ -15,7 +15,7 @@ def write_array_to_file(array, filename):
 
 def write_to_file(tweet_id):
     with open(tweet_id, 'w') as file:
-        file.write()
+        file.write('')
     upload_to_gcs('tweet-cache', tweet_id, tweet_id, 'google-credentials.json')
     os.remove(tweet_id)
 

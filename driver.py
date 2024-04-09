@@ -68,7 +68,7 @@ async def post_most_recent_tweets(blob):
         minutes_since_tweet_creation = find_minutes_since_given_datetime(parse_datetime(tweet_map['time_created']))
         print(tweet_map['capper_name'])
         print(f'minutes since tweet creation {minutes_since_tweet_creation}')
-        if(minutes_since_tweet_creation < 2):
+        if(minutes_since_tweet_creation < 5):
             player_prop = get_player_prop_from_tweet(tweet_map['content'])
             if(not check_blob_existence('tweet-cache', tweet_map['tweet_id'], 'google-credentials.json')):
                 write_to_file(tweet_map['tweet_id'])
