@@ -60,7 +60,7 @@ async def post_most_recent_lines(blob, minutes):
         else:
             print("does not contain lock")
         # await channel.send(embed=embed)
-        await channel.send(all_lines)
+        await channel.send(f'```{all_lines}```')
 
 async def post_most_recent_tweets(blob):
     tweets_json = json.loads(blob.download_as_text())
