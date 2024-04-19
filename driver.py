@@ -63,7 +63,6 @@ async def post_most_recent_lines(blob, minutes):
         color = Colour.dark_purple(),
         description=second_half_lines
     )
-    embed_2.set_author(name="Plays of the Hour", icon_url='https://s3.us-west-1.amazonaws.com/redwood-labs/showpage/uploads/images/e9c2fa72-aee2-4782-9d90-e7113cad3424.png')
     embed_2.set_footer(text = f'Last updated {minutes} minutes ago')
 
     for curr_guild in bot.guilds:
