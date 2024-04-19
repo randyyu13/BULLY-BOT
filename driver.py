@@ -42,12 +42,12 @@ async def look_for_tweet_update():
 
 async def post_most_recent_lines(blob, minutes):
     all_lines = blob.download_as_text()
-    embed = Embed(
-        color = Colour.dark_purple(),
-        description=all_lines
-    )
-    embed.set_author(name="Plays of the Hour", icon_url='https://s3.us-west-1.amazonaws.com/redwood-labs/showpage/uploads/images/e9c2fa72-aee2-4782-9d90-e7113cad3424.png')
-    embed.set_footer(text = f'Last updated {minutes} minutes ago')
+    # embed = Embed(
+    #     color = Colour.dark_purple(),
+    #     description=all_lines
+    # )
+    # embed.set_author(name="Plays of the Hour", icon_url='https://s3.us-west-1.amazonaws.com/redwood-labs/showpage/uploads/images/e9c2fa72-aee2-4782-9d90-e7113cad3424.png')
+    # embed.set_footer(text = f'Last updated {minutes} minutes ago')
     for curr_guild in bot.guilds:
         # sports betting channel
         channel = utils.get(curr_guild.channels, name="sports-betting-bot")
@@ -59,7 +59,8 @@ async def post_most_recent_lines(blob, minutes):
                 print("role not found")
         else:
             print("does not contain lock")
-        await channel.send(embed=embed)
+        # await channel.send(embed=embed)
+        await channel.send(all_lines)
 
 async def post_most_recent_tweets(blob):
     tweets_json = json.loads(blob.download_as_text())
